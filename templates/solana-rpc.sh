@@ -18,7 +18,12 @@ exec /home/solana/.local/share/solana/install/active_release/bin/solana-validato
   {% endfor %}
 {% endif %}
   --ledger {{ solana_ledger_location }} \
+{% if solana_accounts_location is defined %}
   --accounts {{ solana_accounts_location }} \
+{% endif %}
+{% if solana_snapshots_location is defined %}
+  --snapshots {{ solana_snapshots_location }} \
+{% endif %}
 {% if solana_snapshot_compression is defined %}
   --snapshot-compression {{ solana_snapshot_compression }} \
 {% endif %}
@@ -34,6 +39,11 @@ exec /home/solana/.local/share/solana/install/active_release/bin/solana-validato
   --no-genesis-fetch \
   --no-port-check \
   --no-voting \
+{% if solana_full_rpc_api %}
+{%   if (solana_version == "stable" or (solana_version is version('1.9', '>=') and solana_version is version('1.9.6', '>=')) or (solana_version is version('1.9', '<') and solana_version is version('1.8.15', '>=')) %}
+  --full-rpc-api \
+{%  endif %}
+{% endif %}
 {% if solana_trusted_validators|length > 0 %}
   --no-untrusted-rpc \
   --halt-on-trusted-validators-accounts-hash-mismatch \
@@ -49,6 +59,9 @@ exec /home/solana/.local/share/solana/install/active_release/bin/solana-validato
 {% endif %}
 {% if solana_bigtable_enabled is defined and solana_bigtable_enabled %}
   --enable-rpc-bigtable-ledger-storage \
+{% endif %}
+{% if solana_bigtable_upload_enabled is defined and solana_bigtable_upload_enabled %}
+  --enable-bigtable-ledger-upload \
 {% endif %}
 {% if solana_rpc_faucet_address is defined and solana_rpc_faucet_address|length > 0 %}
   --rpc-faucet-address {{ solana_rpc_faucet_address }} \
@@ -89,8 +102,8 @@ exec /home/solana/.local/share/solana/install/active_release/bin/solana-validato
 {% for voter in solana_authorized_voters %}
   --authorized-voter {{ voter }} \
 {% endfor %}
-{% for validator in solana_trusted_validators %}
-  --trusted-validator {{ validator }} {% if not loop.last %}\
+{% for validator in solana_known_validators %}
+  --known-validator {{ validator }} {% if not loop.last %}\
   {% endif %}
 {% endfor %}
 
