@@ -10,7 +10,7 @@ install_rust: true
 
 # Solana variables
 
-solana_installer_version: v1.9.9
+solana_installer_version: v1.9.11
 
 solana_version: stable
 
